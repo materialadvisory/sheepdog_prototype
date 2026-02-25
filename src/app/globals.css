@@ -1,26 +1,38 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Sheepdog brand colors */
+  --color-sheepdog-lime: #E1FAA1;
+  --color-sheepdog-yellow: #FBE557;
+  --color-sheepdog-pink: #ED8089;
+  --color-sheepdog-blue: #8FC6EB;
+  --color-sheepdog-purple: #B78EF8;
+  --color-sheepdog-green: #56BD77;
+  --color-sheepdog-orange: #EF9349;
+  --color-sheepdog-black: #000000;
+  --color-sheepdog-white: #FFFFFF;
+
+  /* Font families */
+  --font-headline: var(--font-bebas-neue), "Bebas Neue", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+/* Pulse animation for unread badge */
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
 }
