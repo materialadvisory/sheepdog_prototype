@@ -83,46 +83,65 @@ export function TopBar({
           </div>
         </div>
 
-        {/* Feed / Reaching Out / Saved tabs */}
-        <div className="flex gap-2 pb-2">
+        {/* Feed / Reaching Out / Saved tabs — underline style */}
+        <div className="flex border-b border-gray-200">
           <button
             onClick={() => onFeedViewChange("feed")}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              "relative px-4 py-2.5 text-sm font-semibold transition-colors",
               feedView === "feed"
-                ? "bg-sheepdog-lime text-sheepdog-black"
-                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                ? "text-sheepdog-black"
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
             Feed
+            {feedView === "feed" && (
+              <span className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full bg-sheepdog-lime" />
+            )}
           </button>
           <button
             onClick={() => onFeedViewChange("reaching-out")}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              "relative px-4 py-2.5 text-sm font-semibold transition-colors",
               feedView === "reaching-out"
-                ? "bg-sheepdog-green text-white"
-                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                ? "text-sheepdog-black"
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
-            Reaching Out{reachingOutCount > 0 && ` (${reachingOutCount})`}
+            Reaching Out
+            {reachingOutCount > 0 && (
+              <span className="ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sheepdog-green/15 px-1.5 text-xs font-semibold text-sheepdog-green">
+                {reachingOutCount}
+              </span>
+            )}
+            {feedView === "reaching-out" && (
+              <span className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full bg-sheepdog-green" />
+            )}
           </button>
           <button
             onClick={() => onFeedViewChange("saved")}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              "relative px-4 py-2.5 text-sm font-semibold transition-colors",
               feedView === "saved"
-                ? "bg-sheepdog-blue text-white"
-                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                ? "text-sheepdog-black"
+                : "text-gray-400 hover:text-gray-600"
             )}
           >
-            Saved{savedCount > 0 && ` (${savedCount})`}
+            Saved
+            {savedCount > 0 && (
+              <span className="ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sheepdog-blue/15 px-1.5 text-xs font-semibold text-sheepdog-blue">
+                {savedCount}
+              </span>
+            )}
+            {feedView === "saved" && (
+              <span className="absolute bottom-0 left-2 right-2 h-[3px] rounded-full bg-sheepdog-blue" />
+            )}
           </button>
         </div>
 
         {/* Date filter pills — only in feed view */}
         {feedView === "feed" && (
-          <div className="flex gap-2 pb-3">
+          <div className="flex gap-2 pt-2.5 pb-3">
             {dateFilters.map((filter) => (
               <button
                 key={filter.value}
