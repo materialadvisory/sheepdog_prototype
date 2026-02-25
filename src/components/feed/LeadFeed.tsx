@@ -17,6 +17,14 @@ export function LeadFeed() {
   // Check if we should show the sourcing state (no leads at all, not just filtered)
   const isSourcing = feed.allLeads.length === 0;
 
+  // Determine empty state variant based on current view
+  const emptyVariant =
+    feed.feedView === "reaching-out"
+      ? "no-reaching-out"
+      : feed.feedView === "saved"
+      ? "no-saved"
+      : "caught-up";
+
   return (
     <div className="min-h-screen bg-gray-50">
       <TopBar
@@ -25,19 +33,23 @@ export function LeadFeed() {
         onSearchChange={feed.setActiveSearch}
         dateFilter={feed.dateFilter}
         onDateFilterChange={feed.setDateFilter}
+        feedView={feed.feedView}
+        onFeedViewChange={feed.setFeedView}
         unreadCount={feed.unreadCount}
+        reachingOutCount={feed.reachingOutCount}
+        savedCount={feed.savedCount}
         onManageSearches={() => feed.setShowSearchManager(true)}
       />
 
       <main className="mx-auto max-w-lg px-4 pb-8 pt-4">
-        {isSourcing ? (
+        {isSourcing && feed.feedView === "feed" ? (
           <SourcingState
             searchLabel={feed.activeSearch.label}
             onManageSearches={() => feed.setShowSearchManager(true)}
           />
         ) : feed.leads.length === 0 ? (
           <EmptyState
-            variant="caught-up"
+            variant={emptyVariant}
             searchLabel={feed.activeSearch.label}
           />
         ) : (
@@ -59,6 +71,7 @@ export function LeadFeed() {
                   onInterested={() => feed.markInterested(lead.id)}
                   onDismiss={() => feed.setShowDismissSheet(lead.id)}
                   onExpand={() => feed.setExpandedLeadId(lead.id)}
+                  onReopenChoice={() => feed.setShowConfirmation(lead.id)}
                 />
               </motion.div>
             ))}

@@ -47,6 +47,12 @@ export function ConfirmationDialog({ onReachOut, onSave, onClose }: Confirmation
             </svg>
             Save For Later
           </Button>
+          <button
+            onClick={onClose}
+            className="w-full pt-1 text-sm text-gray-400 transition-colors hover:text-gray-600"
+          >
+            Decide later
+          </button>
         </div>
       </motion.div>
     </motion.div>

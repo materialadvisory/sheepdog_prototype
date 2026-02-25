@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/Button";
 interface SearchFormStandaloneProps {
   onSubmit: (search: SearchFormData) => void;
   onCancel: () => void;
+  initialData?: SearchFormData;
+  submitLabel?: string;
 }
 
-export function SearchFormStandalone({ onSubmit, onCancel }: SearchFormStandaloneProps) {
-  const [search, setSearch] = useState<SearchFormData>(createEmptySearch());
+export function SearchFormStandalone({ onSubmit, onCancel, initialData, submitLabel }: SearchFormStandaloneProps) {
+  const [search, setSearch] = useState<SearchFormData>(initialData ?? createEmptySearch());
 
   const updateField = useCallback(
     (field: keyof SearchFormData, value: string | string[] | boolean | PropertyTypeOption[]) => {
@@ -85,7 +87,7 @@ export function SearchFormStandalone({ onSubmit, onCancel }: SearchFormStandalon
           disabled={!isValid}
           className="flex-1"
         >
-          Create Search
+          {submitLabel ?? "Create Search"}
         </Button>
       </div>
     </div>

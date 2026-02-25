@@ -11,7 +11,7 @@ interface SearchManagerProps {
   onClose: () => void;
   onAdd: (search: Search) => void;
   onDelete: (searchId: string) => void;
-  onUpdate: (searchId: string, label: string) => void;
+  onUpdate: (searchId: string, updatedSearch: Search) => void;
 }
 
 export function SearchManager({
@@ -22,13 +22,17 @@ export function SearchManager({
   onUpdate,
 }: SearchManagerProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const handleAddSearch = (formData: SearchFormData) => {
-    onAdd({ id: formData.id, label: formData.label });
+    onAdd(formData);
     setShowAddForm(false);
+  };
+
+  const handleEditSearch = (searchId: string, formData: SearchFormData) => {
+    onUpdate(searchId, { ...formData, id: searchId });
+    setEditingId(null);
   };
 
   return (
@@ -72,73 +76,65 @@ export function SearchManager({
         </div>
 
         {/* Existing searches */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {searches.map((search) => (
-            <div
-              key={search.id}
-              className="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3"
-            >
+            <div key={search.id}>
               {editingId === search.id ? (
-                <input
-                  type="text"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onBlur={() => {
-                    if (editValue.trim()) onUpdate(search.id, editValue.trim());
-                    setEditingId(null);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      if (editValue.trim())
-                        onUpdate(search.id, editValue.trim());
-                      setEditingId(null);
-                    }
-                  }}
-                  autoFocus
-                  className="flex-1 rounded-lg border border-sheepdog-lime px-2 py-1 text-sm focus:outline-none"
-                />
-              ) : (
-                <span className="text-sm font-medium text-gray-700">
-                  {search.label}
-                </span>
-              )}
-
-              {confirmDelete === search.id ? (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      onDelete(search.id);
-                      setConfirmDelete(null);
-                    }}
-                    className="text-xs font-medium text-red-500 hover:text-red-700"
-                  >
-                    Confirm
-                  </button>
-                  <button
-                    onClick={() => setConfirmDelete(null)}
-                    className="text-xs text-gray-400 hover:text-gray-600"
-                  >
-                    Cancel
-                  </button>
+                <div className="rounded-2xl border border-sheepdog-lime/50 bg-gray-50 p-4">
+                  <h4 className="mb-3 text-sm font-semibold text-gray-600">
+                    Editing: {search.label}
+                  </h4>
+                  <SearchFormStandalone
+                    initialData={search}
+                    onSubmit={(updated) => handleEditSearch(search.id, updated)}
+                    onCancel={() => setEditingId(null)}
+                    submitLabel="Save Changes"
+                  />
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setEditingId(search.id);
-                      setEditValue(search.label);
-                    }}
-                    className="text-xs text-gray-400 hover:text-gray-600"
-                  >
-                    Rename
-                  </button>
-                  {searches.length > 1 && (
-                    <button
-                      onClick={() => setConfirmDelete(search.id)}
-                      className="text-xs text-gray-400 hover:text-red-500"
-                    >
-                      Delete
-                    </button>
+                <div className="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3">
+                  <span className="text-sm font-medium text-gray-700">
+                    {search.label}
+                  </span>
+
+                  {confirmDelete === search.id ? (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          onDelete(search.id);
+                          setConfirmDelete(null);
+                        }}
+                        className="text-xs font-medium text-red-500 hover:text-red-700"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        onClick={() => setConfirmDelete(null)}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingId(search.id);
+                          setShowAddForm(false);
+                        }}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        Edit
+                      </button>
+                      {searches.length > 1 && (
+                        <button
+                          onClick={() => setConfirmDelete(search.id)}
+                          className="text-xs text-gray-400 hover:text-red-500"
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
@@ -159,7 +155,10 @@ export function SearchManager({
           </div>
         ) : (
           <button
-            onClick={() => setShowAddForm(true)}
+            onClick={() => {
+              setShowAddForm(true);
+              setEditingId(null);
+            }}
             className="mt-3 w-full rounded-xl border-2 border-dashed border-gray-200 py-3 text-sm font-medium text-gray-400 transition-colors hover:border-sheepdog-lime hover:text-sheepdog-green"
           >
             + Add New Search

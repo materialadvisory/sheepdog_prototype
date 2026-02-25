@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import type { Search } from "@/types/lead";
-import type { DateFilter } from "@/hooks/useLeadFeed";
+import type { DateFilter, FeedView } from "@/hooks/useLeadFeed";
 
 interface TopBarProps {
   activeSearch: Search;
@@ -10,7 +10,11 @@ interface TopBarProps {
   onSearchChange: (search: Search) => void;
   dateFilter: DateFilter;
   onDateFilterChange: (filter: DateFilter) => void;
+  feedView: FeedView;
+  onFeedViewChange: (view: FeedView) => void;
   unreadCount: number;
+  reachingOutCount: number;
+  savedCount: number;
   onManageSearches: () => void;
 }
 
@@ -26,7 +30,11 @@ export function TopBar({
   onSearchChange,
   dateFilter,
   onDateFilterChange,
+  feedView,
+  onFeedViewChange,
   unreadCount,
+  reachingOutCount,
+  savedCount,
   onManageSearches,
 }: TopBarProps) {
   return (
@@ -39,27 +47,32 @@ export function TopBar({
           </h1>
 
           <div className="flex items-center gap-3">
-            {/* Search selector */}
-            <select
-              value={activeSearch.id}
-              onChange={(e) => {
-                if (e.target.value === "__manage__") {
-                  onManageSearches();
-                  e.target.value = activeSearch.id;
-                  return;
-                }
-                const s = searches.find((s) => s.id === e.target.value);
-                if (s) onSearchChange(s);
-              }}
-              className="max-w-[180px] rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
-            >
-              {searches.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.label}
-                </option>
-              ))}
-              <option value="__manage__">Manage Searches...</option>
-            </select>
+            {/* Search selector with label */}
+            <div className="flex flex-col">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                Searches
+              </span>
+              <select
+                value={activeSearch.id}
+                onChange={(e) => {
+                  if (e.target.value === "__manage__") {
+                    onManageSearches();
+                    e.target.value = activeSearch.id;
+                    return;
+                  }
+                  const s = searches.find((s) => s.id === e.target.value);
+                  if (s) onSearchChange(s);
+                }}
+                className="max-w-[180px] rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+              >
+                {searches.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+                <option value="__manage__">Manage Searches...</option>
+              </select>
+            </div>
 
             {/* Unread count */}
             {unreadCount > 0 && (
@@ -70,23 +83,62 @@ export function TopBar({
           </div>
         </div>
 
-        {/* Date filter pills */}
-        <div className="flex gap-2 pb-3">
-          {dateFilters.map((filter) => (
-            <button
-              key={filter.value}
-              onClick={() => onDateFilterChange(filter.value)}
-              className={cn(
-                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                dateFilter === filter.value
-                  ? "bg-sheepdog-lime text-sheepdog-black"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-              )}
-            >
-              {filter.label}
-            </button>
-          ))}
+        {/* Feed / Reaching Out / Saved tabs */}
+        <div className="flex gap-2 pb-2">
+          <button
+            onClick={() => onFeedViewChange("feed")}
+            className={cn(
+              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              feedView === "feed"
+                ? "bg-sheepdog-lime text-sheepdog-black"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+            )}
+          >
+            Feed
+          </button>
+          <button
+            onClick={() => onFeedViewChange("reaching-out")}
+            className={cn(
+              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              feedView === "reaching-out"
+                ? "bg-sheepdog-green text-white"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+            )}
+          >
+            Reaching Out{reachingOutCount > 0 && ` (${reachingOutCount})`}
+          </button>
+          <button
+            onClick={() => onFeedViewChange("saved")}
+            className={cn(
+              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              feedView === "saved"
+                ? "bg-sheepdog-blue text-white"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+            )}
+          >
+            Saved{savedCount > 0 && ` (${savedCount})`}
+          </button>
         </div>
+
+        {/* Date filter pills — only in feed view */}
+        {feedView === "feed" && (
+          <div className="flex gap-2 pb-3">
+            {dateFilters.map((filter) => (
+              <button
+                key={filter.value}
+                onClick={() => onDateFilterChange(filter.value)}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  dateFilter === filter.value
+                    ? "bg-sheepdog-lime text-sheepdog-black"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                )}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-8 md:px-12 lg:px-16">
         <h1 className="font-headline text-2xl uppercase tracking-wider">
           Sheepdog
         </h1>

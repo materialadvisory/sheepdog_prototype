@@ -5,12 +5,14 @@ import { mockLeadsBySearch, defaultMockLeads, searches } from "@/data/mockLeads"
 import type { PropertyLead, DismissReason, InterestedAction, Search } from "@/types/lead";
 
 export type DateFilter = "today" | "yesterday" | "this-week";
+export type FeedView = "feed" | "reaching-out" | "saved";
 
 export function useLeadFeed() {
   const [leadsBySearch, setLeadsBySearch] = useState<Record<string, PropertyLead[]>>(mockLeadsBySearch);
   const [allSearches, setAllSearches] = useState<Search[]>(searches);
   const [activeSearch, setActiveSearch] = useState<Search>(searches[0]);
   const [dateFilter, setDateFilter] = useState<DateFilter>("this-week");
+  const [feedView, setFeedView] = useState<FeedView>("feed");
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
   const [showDismissSheet, setShowDismissSheet] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState<string | null>(null);
@@ -25,19 +27,44 @@ export function useLeadFeed() {
     return leadsBySearch[activeSearch.id] || defaultMockLeads;
   }, [leadsBySearch, activeSearch.id]);
 
-  // Filter leads by date and status
+  // Filter leads based on view and date
   const visibleLeads = useMemo(() => {
+    if (feedView === "reaching-out") {
+      return currentLeads.filter(
+        (lead) => lead.status === "interested" && lead.interestedAction === "reach-out"
+      );
+    }
+    if (feedView === "saved") {
+      return currentLeads.filter(
+        (lead) => lead.status === "interested" && lead.interestedAction === "save"
+      );
+    }
+    // Default "feed" view
     return currentLeads.filter((lead) => {
       if (lead.status === "dismissed") return false;
       if (dateFilter === "today") return lead.dateSourced === today;
       if (dateFilter === "yesterday") return lead.dateSourced === yesterday;
       return true;
     });
-  }, [currentLeads, dateFilter, today, yesterday]);
+  }, [currentLeads, feedView, dateFilter, today, yesterday]);
 
   // Count of new (unactioned) leads for active search
   const unreadCount = useMemo(() => {
     return currentLeads.filter((l) => l.status === "new").length;
+  }, [currentLeads]);
+
+  // Count of leads being reached out to
+  const reachingOutCount = useMemo(() => {
+    return currentLeads.filter(
+      (l) => l.status === "interested" && l.interestedAction === "reach-out"
+    ).length;
+  }, [currentLeads]);
+
+  // Count of saved leads
+  const savedCount = useMemo(() => {
+    return currentLeads.filter(
+      (l) => l.status === "interested" && l.interestedAction === "save"
+    ).length;
   }, [currentLeads]);
 
   const markInterested = useCallback((leadId: string) => {
@@ -94,9 +121,9 @@ export function useLeadFeed() {
     [activeSearch.id]
   );
 
-  const updateSearch = useCallback((searchId: string, label: string) => {
+  const updateSearch = useCallback((searchId: string, updatedSearch: Search) => {
     setAllSearches((prev) =>
-      prev.map((s) => (s.id === searchId ? { ...s, label } : s))
+      prev.map((s) => (s.id === searchId ? updatedSearch : s))
     );
   }, []);
 
@@ -108,7 +135,11 @@ export function useLeadFeed() {
     searches: allSearches,
     dateFilter,
     setDateFilter,
+    feedView,
+    setFeedView,
     unreadCount,
+    reachingOutCount,
+    savedCount,
     expandedLeadId,
     setExpandedLeadId,
     showDismissSheet,

@@ -1,3 +1,5 @@
+import type { SearchFormData } from "./onboarding";
+
 export type PropertyType = "SFR" | "Multi-Family" | "Condo" | "Townhouse";
 
 export type DistressIndicator =
@@ -59,9 +61,9 @@ export interface PropertyLead {
   dateSourced: string;
   lotSize?: string;
   neighborhood?: string;
+  isOffMarket?: boolean;
+  isSellerInterested?: boolean;
 }
 
-export interface Search {
-  id: string;
-  label: string;
-}
+// Search is now the full SearchFormData from onboarding
+export type Search = SearchFormData;

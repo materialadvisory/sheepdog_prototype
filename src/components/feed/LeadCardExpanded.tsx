@@ -54,6 +54,27 @@ export function LeadCardExpanded({ lead, onClose }: LeadCardExpandedProps) {
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+
+          {/* Property tag badges - top left */}
+          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+            {lead.isOffMarket && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-sheepdog-orange px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow-md">
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                Off Market
+              </span>
+            )}
+            {lead.isSellerInterested && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-sheepdog-green px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow-md">
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                </svg>
+                Seller Interested
+              </span>
+            )}
+          </div>
+
           <div className="absolute right-3 top-14">
             <ProgressRing score={lead.matchScore} size={64} strokeWidth={5} />
           </div>
@@ -75,6 +96,16 @@ export function LeadCardExpanded({ lead, onClose }: LeadCardExpandedProps) {
           <div className="flex flex-wrap gap-2">
             <Badge variant="property">{lead.propertyType}</Badge>
             <Badge variant="owner">{lead.ownerType}</Badge>
+            {lead.isOffMarket && (
+              <span className="rounded-full bg-sheepdog-orange/15 px-2.5 py-0.5 text-xs font-semibold text-sheepdog-orange">
+                Off Market
+              </span>
+            )}
+            {lead.isSellerInterested && (
+              <span className="rounded-full bg-sheepdog-green/15 px-2.5 py-0.5 text-xs font-semibold text-sheepdog-green">
+                Seller Interested
+              </span>
+            )}
           </div>
 
           {/* Specs */}

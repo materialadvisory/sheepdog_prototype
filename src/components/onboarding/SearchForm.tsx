@@ -193,66 +193,6 @@ export function SearchForm({
           </div>
         </div>
 
-        {/* Price range */}
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Price Range
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={search.priceMin}
-              onChange={(e) => onUpdate("priceMin", e.target.value)}
-              placeholder="$200,000"
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
-            />
-            <span className="text-gray-400">&mdash;</span>
-            <input
-              type="text"
-              value={search.priceMax}
-              onChange={(e) => onUpdate("priceMax", e.target.value)}
-              placeholder="$500,000"
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
-            />
-          </div>
-        </div>
-
-        {/* Beds & Baths */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Beds Min
-            </label>
-            <select
-              value={search.bedroomsMin}
-              onChange={(e) => onUpdate("bedroomsMin", e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
-            >
-              {["Any", "1+", "2+", "3+", "4+", "5+"].map((v) => (
-                <option key={v} value={v}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Baths Min
-            </label>
-            <select
-              value={search.bathroomsMin}
-              onChange={(e) => onUpdate("bathroomsMin", e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
-            >
-              {["Any", "1+", "2+", "3+"].map((v) => (
-                <option key={v} value={v}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
         {/* Additional Filters toggle */}
         <button
           type="button"
@@ -281,6 +221,66 @@ export function SearchForm({
         {/* Additional Filters content */}
         {showAdvanced && (
           <div className="space-y-4 rounded-xl bg-gray-50 p-4">
+            {/* Price range */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Price Range
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={search.priceMin}
+                  onChange={(e) => onUpdate("priceMin", e.target.value)}
+                  placeholder="$200,000"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+                />
+                <span className="text-gray-400">&mdash;</span>
+                <input
+                  type="text"
+                  value={search.priceMax}
+                  onChange={(e) => onUpdate("priceMax", e.target.value)}
+                  placeholder="$500,000"
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+                />
+              </div>
+            </div>
+
+            {/* Beds & Baths */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Beds Min
+                </label>
+                <select
+                  value={search.bedroomsMin}
+                  onChange={(e) => onUpdate("bedroomsMin", e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+                >
+                  {["Any", "1+", "2+", "3+", "4+", "5+"].map((v) => (
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Baths Min
+                </label>
+                <select
+                  value={search.bathroomsMin}
+                  onChange={(e) => onUpdate("bathroomsMin", e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+                >
+                  {["Any", "1+", "2+", "3+"].map((v) => (
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Sqft range */}
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">
