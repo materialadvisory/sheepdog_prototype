@@ -13,7 +13,9 @@ export type OwnerType =
   | "Absentee Owner"
   | "Trust";
 
-export type LeadStatus = "new" | "interested" | "dismissed";
+export type LeadStatus = "new" | "interested" | "saved" | "dismissed";
+
+export type InterestedAction = "reach-out" | "save";
 
 export type DismissReason =
   | "Price too high"
@@ -51,7 +53,9 @@ export interface PropertyLead {
   ownerType: OwnerType;
   ownerName: string;
   status: LeadStatus;
+  interestedAction?: InterestedAction;
   dismissReason?: DismissReason;
+  dismissReasonText?: string;
   dateSourced: string;
   lotSize?: string;
   neighborhood?: string;

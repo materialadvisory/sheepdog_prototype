@@ -12,8 +12,11 @@ interface SearchFormProps {
   onUpdate: (field: keyof SearchFormData, value: string | string[] | boolean | PropertyTypeOption[]) => void;
   onAddZip: (zip: string) => void;
   onRemoveZip: (zip: string) => void;
+  onAddArea: (area: string) => void;
+  onRemoveArea: (area: string) => void;
   onTogglePropertyType: (type: PropertyTypeOption) => void;
   onRemove: () => void;
+  hideHeader?: boolean;
 }
 
 export function SearchForm({
@@ -23,35 +26,54 @@ export function SearchForm({
   onUpdate,
   onAddZip,
   onRemoveZip,
+  onAddArea,
+  onRemoveArea,
   onTogglePropertyType,
   onRemove,
+  hideHeader,
 }: SearchFormProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [zipInput, setZipInput] = useState("");
+  const [locationInput, setLocationInput] = useState("");
 
-  const handleAddZip = () => {
-    const zip = zipInput.trim();
-    if (zip && /^\d{5}$/.test(zip) && !search.zipCodes.includes(zip)) {
-      onAddZip(zip);
-      setZipInput("");
+  const handleAddLocation = () => {
+    const raw = locationInput.trim();
+    if (!raw) return;
+
+    // Split by comma so users can enter multiple at once
+    const entries = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    for (const entry of entries) {
+      if (/^\d{5}$/.test(entry)) {
+        // It's a zip code
+        if (!search.zipCodes.includes(entry)) {
+          onAddZip(entry);
+        }
+      } else {
+        // It's a city, county, or neighborhood
+        if (!search.areas.includes(entry)) {
+          onAddArea(entry);
+        }
+      }
     }
+    setLocationInput("");
   };
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <h4 className="font-headline text-base uppercase tracking-wide">
-          Search {index + 1}
-        </h4>
-        {canRemove && (
-          <button
-            onClick={onRemove}
-            className="text-xs text-gray-400 hover:text-red-500"
-          >
-            Remove
-          </button>
-        )}
-      </div>
+      {!hideHeader && (
+        <div className="mb-4 flex items-center justify-between">
+          <h4 className="font-headline text-base uppercase tracking-wide">
+            Search {index + 1}
+          </h4>
+          {canRemove && (
+            <button
+              onClick={onRemove}
+              className="text-xs text-gray-400 hover:text-red-500"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="space-y-4">
         {/* Search name */}
@@ -68,56 +90,72 @@ export function SearchForm({
           />
         </div>
 
-        {/* State + Zip codes */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              State *
-            </label>
-            <select
-              value={search.state}
-              onChange={(e) => onUpdate("state", e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
-            >
-              <option value="">Select...</option>
-              {US_STATES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Zip Codes
-            </label>
-            <div className="flex gap-1">
-              <input
-                type="text"
-                value={zipInput}
-                onChange={(e) => setZipInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAddZip()}
-                placeholder="33020"
-                maxLength={5}
-                className="w-full rounded-xl border border-gray-200 px-3 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
-              />
-              <button
-                onClick={handleAddZip}
-                className="shrink-0 rounded-xl bg-gray-100 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-gray-200"
-              >
-                +
-              </button>
-            </div>
-          </div>
+        {/* State */}
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            State *
+          </label>
+          <select
+            value={search.state}
+            onChange={(e) => onUpdate("state", e.target.value)}
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+          >
+            <option value="">Select...</option>
+            {US_STATES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Zip code tags */}
-        {search.zipCodes.length > 0 && (
+        {/* Location input — cities, counties, zip codes */}
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Cities, Counties, or Zip Codes
+          </label>
+          <div className="flex gap-1">
+            <input
+              type="text"
+              value={locationInput}
+              onChange={(e) => setLocationInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddLocation()}
+              placeholder="e.g., Miami, Broward County, 33020"
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+            />
+            <button
+              onClick={handleAddLocation}
+              className="shrink-0 rounded-xl bg-gray-100 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-gray-200"
+            >
+              +
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-gray-400">
+            Separate multiple with commas, then press Enter or +
+          </p>
+        </div>
+
+        {/* Location tags (areas + zip codes) */}
+        {(search.areas.length > 0 || search.zipCodes.length > 0) && (
           <div className="flex flex-wrap gap-1.5">
+            {search.areas.map((area) => (
+              <span
+                key={area}
+                className="inline-flex items-center gap-1 rounded-full bg-sheepdog-lime/30 px-3 py-1 text-xs font-medium text-sheepdog-black"
+              >
+                {area}
+                <button
+                  onClick={() => onRemoveArea(area)}
+                  className="ml-0.5 text-gray-500 hover:text-red-500"
+                >
+                  &times;
+                </button>
+              </span>
+            ))}
             {search.zipCodes.map((zip) => (
               <span
                 key={zip}
-                className="inline-flex items-center gap-1 rounded-full bg-sheepdog-lime/30 px-3 py-1 text-xs font-medium text-sheepdog-black"
+                className="inline-flex items-center gap-1 rounded-full bg-sheepdog-blue/30 px-3 py-1 text-xs font-medium text-sheepdog-black"
               >
                 {zip}
                 <button
@@ -215,7 +253,7 @@ export function SearchForm({
           </div>
         </div>
 
-        {/* Advanced Filters toggle */}
+        {/* Additional Filters toggle */}
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
@@ -237,10 +275,10 @@ export function SearchForm({
               d="M9 5l7 7-7 7"
             />
           </svg>
-          Advanced Filters
+          Additional Filters
         </button>
 
-        {/* Advanced Filters content */}
+        {/* Additional Filters content */}
         {showAdvanced && (
           <div className="space-y-4 rounded-xl bg-gray-50 p-4">
             {/* Sqft range */}

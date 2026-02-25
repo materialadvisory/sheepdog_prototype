@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { mockLeads, searches } from "@/data/mockLeads";
-import type { PropertyLead, DismissReason, Search } from "@/types/lead";
+import { mockLeadsBySearch, defaultMockLeads, searches } from "@/data/mockLeads";
+import type { PropertyLead, DismissReason, InterestedAction, Search } from "@/types/lead";
 
 export type DateFilter = "today" | "yesterday" | "this-week";
 
 export function useLeadFeed() {
-  const [leads, setLeads] = useState<PropertyLead[]>(mockLeads);
+  const [leadsBySearch, setLeadsBySearch] = useState<Record<string, PropertyLead[]>>(mockLeadsBySearch);
   const [allSearches, setAllSearches] = useState<Search[]>(searches);
   const [activeSearch, setActiveSearch] = useState<Search>(searches[0]);
   const [dateFilter, setDateFilter] = useState<DateFilter>("this-week");
@@ -20,44 +20,65 @@ export function useLeadFeed() {
   const today = new Date().toISOString().split("T")[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
 
+  // Get leads for the active search
+  const currentLeads = useMemo(() => {
+    return leadsBySearch[activeSearch.id] || defaultMockLeads;
+  }, [leadsBySearch, activeSearch.id]);
+
   // Filter leads by date and status
   const visibleLeads = useMemo(() => {
-    return leads.filter((lead) => {
+    return currentLeads.filter((lead) => {
       if (lead.status === "dismissed") return false;
       if (dateFilter === "today") return lead.dateSourced === today;
       if (dateFilter === "yesterday") return lead.dateSourced === yesterday;
       return true;
     });
-  }, [leads, dateFilter, today, yesterday]);
+  }, [currentLeads, dateFilter, today, yesterday]);
 
-  // Count of new (unactioned) leads
+  // Count of new (unactioned) leads for active search
   const unreadCount = useMemo(() => {
-    return leads.filter((l) => l.status === "new").length;
-  }, [leads]);
+    return currentLeads.filter((l) => l.status === "new").length;
+  }, [currentLeads]);
 
   const markInterested = useCallback((leadId: string) => {
-    setLeads((prev) =>
-      prev.map((l) =>
+    setLeadsBySearch((prev) => ({
+      ...prev,
+      [activeSearch.id]: (prev[activeSearch.id] || []).map((l) =>
         l.id === leadId ? { ...l, status: "interested" as const } : l
-      )
-    );
+      ),
+    }));
     setShowConfirmation(leadId);
-  }, []);
+  }, [activeSearch.id]);
 
-  const dismissLead = useCallback((leadId: string, reason: DismissReason) => {
-    setLeads((prev) =>
-      prev.map((l) =>
+  const setInterestedAction = useCallback((leadId: string, action: InterestedAction) => {
+    setLeadsBySearch((prev) => ({
+      ...prev,
+      [activeSearch.id]: (prev[activeSearch.id] || []).map((l) =>
+        l.id === leadId ? { ...l, interestedAction: action } : l
+      ),
+    }));
+    setShowConfirmation(null);
+  }, [activeSearch.id]);
+
+  const dismissLead = useCallback((leadId: string, reason: DismissReason, customText?: string) => {
+    setLeadsBySearch((prev) => ({
+      ...prev,
+      [activeSearch.id]: (prev[activeSearch.id] || []).map((l) =>
         l.id === leadId
-          ? { ...l, status: "dismissed" as const, dismissReason: reason }
+          ? { ...l, status: "dismissed" as const, dismissReason: reason, dismissReasonText: customText }
           : l
-      )
-    );
+      ),
+    }));
     setShowDismissSheet(null);
-  }, []);
+  }, [activeSearch.id]);
 
   // Search management
   const addSearch = useCallback((search: Search) => {
     setAllSearches((prev) => [...prev, search]);
+    setLeadsBySearch((prev) => ({
+      ...prev,
+      [search.id]: defaultMockLeads.map((l) => ({ ...l, id: `${l.id}-${search.id}` })),
+    }));
   }, []);
 
   const deleteSearch = useCallback(
@@ -81,7 +102,7 @@ export function useLeadFeed() {
 
   return {
     leads: visibleLeads,
-    allLeads: leads,
+    allLeads: currentLeads,
     activeSearch,
     setActiveSearch,
     searches: allSearches,
@@ -97,6 +118,7 @@ export function useLeadFeed() {
     showSearchManager,
     setShowSearchManager,
     markInterested,
+    setInterestedAction,
     dismissLead,
     addSearch,
     deleteSearch,

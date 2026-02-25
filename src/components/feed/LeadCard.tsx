@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { PropertySpecs } from "./PropertySpecs";
@@ -25,7 +26,7 @@ export function LeadCard({
   onDismiss,
   onExpand,
 }: LeadCardProps) {
-  const isActioned = lead.status === "interested";
+  const isActioned = lead.status === "interested" || lead.status === "saved";
 
   return (
     <div className="mb-4 overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100">
@@ -101,14 +102,32 @@ export function LeadCard({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 rounded-xl bg-sheepdog-lime/20 px-4 py-3"
+            className={cn(
+              "flex items-center gap-2 rounded-xl px-4 py-3",
+              lead.interestedAction === "save"
+                ? "bg-sheepdog-blue/20"
+                : "bg-sheepdog-lime/20"
+            )}
           >
-            <svg className="h-5 w-5 text-sheepdog-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-            <span className="text-sm font-semibold text-sheepdog-green">
-              In Progress — We&apos;ll reach out to the owner
-            </span>
+            {lead.interestedAction === "save" ? (
+              <>
+                <svg className="h-5 w-5 text-sheepdog-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                </svg>
+                <span className="text-sm font-semibold text-sheepdog-blue">
+                  Saved for later
+                </span>
+              </>
+            ) : (
+              <>
+                <svg className="h-5 w-5 text-sheepdog-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                <span className="text-sm font-semibold text-sheepdog-green">
+                  Reaching out to the owner
+                </span>
+              </>
+            )}
           </motion.div>
         ) : (
           <ActionButtons

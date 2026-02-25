@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 
 interface ConfirmationDialogProps {
+  onReachOut: () => void;
+  onSave: () => void;
   onClose: () => void;
 }
 
-export function ConfirmationDialog({ onClose }: ConfirmationDialogProps) {
+export function ConfirmationDialog({ onReachOut, onSave, onClose }: ConfirmationDialogProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -24,41 +26,28 @@ export function ConfirmationDialog({ onClose }: ConfirmationDialogProps) {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-xl"
       >
-        {/* Checkmark circle */}
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sheepdog-lime">
-          <motion.svg
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="h-8 w-8 text-sheepdog-black"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={3}
-          >
-            <motion.path
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-            />
-          </motion.svg>
-        </div>
-
         <h3 className="mb-2 font-headline text-xl uppercase tracking-wide">
-          You&apos;re In
+          What Would You Like To Do?
         </h3>
 
         <p className="mb-6 text-sm text-gray-500">
-          We&apos;ll reach out to the property owner on your behalf.
-          You&apos;ll be notified when they respond.
+          Have us reach out to the owner, or save this property for later.
         </p>
 
-        <Button onClick={onClose} className="w-full">
-          Got It
-        </Button>
+        <div className="space-y-3">
+          <Button onClick={onReachOut} className="w-full">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+            Reach Out For Me
+          </Button>
+          <Button variant="secondary" onClick={onSave} className="w-full">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+            </svg>
+            Save For Later
+          </Button>
+        </div>
       </motion.div>
     </motion.div>
   );

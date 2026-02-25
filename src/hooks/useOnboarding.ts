@@ -20,7 +20,7 @@ export function useOnboarding() {
     fullName: "",
     companyName: "",
     phone: "",
-    buyerIntent: null,
+    buyerIntent: [],
   });
 
   // Step 2: Searches
@@ -42,11 +42,20 @@ export function useOnboarding() {
 
   // Profile updates
   const updateProfile = useCallback(
-    (field: keyof ProfileData, value: string | BuyerIntent) => {
+    (field: keyof ProfileData, value: string) => {
       setProfile((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
+
+  const toggleBuyerIntent = useCallback((intent: BuyerIntent) => {
+    setProfile((prev) => {
+      const intents = prev.buyerIntent.includes(intent)
+        ? prev.buyerIntent.filter((i) => i !== intent)
+        : [...prev.buyerIntent, intent];
+      return { ...prev, buyerIntent: intents };
+    });
+  }, []);
 
   // Search updates
   const updateSearch = useCallback(
@@ -87,6 +96,27 @@ export function useOnboarding() {
     );
   }, []);
 
+  // Area helpers
+  const addArea = useCallback((searchIndex: number, area: string) => {
+    setSearches((prev) =>
+      prev.map((s, i) =>
+        i === searchIndex
+          ? { ...s, areas: [...s.areas, area] }
+          : s
+      )
+    );
+  }, []);
+
+  const removeArea = useCallback((searchIndex: number, area: string) => {
+    setSearches((prev) =>
+      prev.map((s, i) =>
+        i === searchIndex
+          ? { ...s, areas: s.areas.filter((a) => a !== area) }
+          : s
+      )
+    );
+  }, []);
+
   // Property type toggle
   const togglePropertyType = useCallback(
     (searchIndex: number, type: PropertyTypeOption) => {
@@ -104,7 +134,7 @@ export function useOnboarding() {
   );
 
   // Validation
-  const isStep1Valid = profile.fullName.trim() !== "" && profile.buyerIntent !== null;
+  const isStep1Valid = profile.fullName.trim() !== "" && profile.buyerIntent.length > 0;
 
   const isStep2Valid = searches.length > 0 && searches.every(
     (s) => s.label.trim() !== "" && s.state !== "" && s.propertyTypes.length > 0
@@ -122,12 +152,15 @@ export function useOnboarding() {
     goBack,
     profile,
     updateProfile,
+    toggleBuyerIntent,
     searches,
     updateSearch,
     addSearch,
     removeSearch,
     addZipCode,
     removeZipCode,
+    addArea,
+    removeArea,
     togglePropertyType,
     channel,
     setChannel,

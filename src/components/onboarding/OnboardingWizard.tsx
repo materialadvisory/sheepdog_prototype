@@ -43,6 +43,7 @@ export function OnboardingWizard() {
               <StepProfile
                 profile={onboarding.profile}
                 onUpdate={onboarding.updateProfile}
+                onToggleBuyerIntent={onboarding.toggleBuyerIntent}
               />
             )}
 
@@ -54,6 +55,8 @@ export function OnboardingWizard() {
                 onRemove={onboarding.removeSearch}
                 onAddZip={onboarding.addZipCode}
                 onRemoveZip={onboarding.removeZipCode}
+                onAddArea={onboarding.addArea}
+                onRemoveArea={onboarding.removeArea}
                 onTogglePropertyType={onboarding.togglePropertyType}
               />
             )}

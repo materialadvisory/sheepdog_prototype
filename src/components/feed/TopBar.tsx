@@ -61,13 +61,10 @@ export function TopBar({
               <option value="__manage__">Manage Searches...</option>
             </select>
 
-            {/* Unread badge */}
+            {/* Unread count */}
             {unreadCount > 0 && (
-              <span
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-sheepdog-pink text-xs font-bold text-white"
-                style={{ animation: "pulse-badge 2s ease-in-out infinite" }}
-              >
-                {unreadCount}
+              <span className="rounded-full bg-sheepdog-lime/30 px-3 py-1 text-xs font-semibold text-sheepdog-green">
+                {unreadCount} new {unreadCount === 1 ? "lead" : "leads"}
               </span>
             )}
           </div>

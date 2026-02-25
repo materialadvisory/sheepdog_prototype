@@ -6,10 +6,11 @@ import { BUYER_INTENT_OPTIONS } from "@/types/onboarding";
 
 interface StepProfileProps {
   profile: ProfileData;
-  onUpdate: (field: keyof ProfileData, value: string | BuyerIntent) => void;
+  onUpdate: (field: keyof ProfileData, value: string) => void;
+  onToggleBuyerIntent: (intent: BuyerIntent) => void;
 }
 
-export function StepProfile({ profile, onUpdate }: StepProfileProps) {
+export function StepProfile({ profile, onUpdate, onToggleBuyerIntent }: StepProfileProps) {
   return (
     <div>
       <h2 className="mb-2 font-headline text-2xl uppercase tracking-wide">
@@ -64,15 +65,15 @@ export function StepProfile({ profile, onUpdate }: StepProfileProps) {
           <label className="mb-3 block text-sm font-medium text-gray-700">
             I&apos;m looking to... *
           </label>
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {BUYER_INTENT_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 type="button"
-                onClick={() => onUpdate("buyerIntent", option.value)}
+                onClick={() => onToggleBuyerIntent(option.value)}
                 className={cn(
-                  "w-full rounded-xl border px-4 py-3 text-left text-sm transition-colors",
-                  profile.buyerIntent === option.value
+                  "rounded-full border px-4 py-2 text-sm transition-colors",
+                  profile.buyerIntent.includes(option.value)
                     ? "border-sheepdog-lime bg-sheepdog-lime/20 font-medium text-sheepdog-black"
                     : "border-gray-200 text-gray-600 hover:border-gray-300"
                 )}

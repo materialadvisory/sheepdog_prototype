@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 import type { DismissReason } from "@/types/lead";
 
 const reasons: DismissReason[] = [
@@ -12,7 +14,7 @@ const reasons: DismissReason[] = [
 ];
 
 interface DismissReasonSheetProps {
-  onSelect: (reason: DismissReason) => void;
+  onSelect: (reason: DismissReason, customText?: string) => void;
   onClose: () => void;
 }
 
@@ -20,6 +22,9 @@ export function DismissReasonSheet({
   onSelect,
   onClose,
 }: DismissReasonSheetProps) {
+  const [showOtherInput, setShowOtherInput] = useState(false);
+  const [otherText, setOtherText] = useState("");
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -59,7 +64,13 @@ export function DismissReasonSheet({
             <motion.button
               key={reason}
               whileTap={{ scale: 0.98 }}
-              onClick={() => onSelect(reason)}
+              onClick={() => {
+                if (reason === "Other") {
+                  setShowOtherInput(true);
+                } else {
+                  onSelect(reason);
+                }
+              }}
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700 transition-colors hover:border-sheepdog-pink hover:bg-sheepdog-pink/5"
             >
               {reason}
@@ -67,12 +78,37 @@ export function DismissReasonSheet({
           ))}
         </div>
 
-        <button
-          onClick={() => onSelect("Other")}
-          className="mt-3 w-full text-center text-sm text-gray-400 hover:text-gray-600"
-        >
-          Skip — just dismiss it
-        </button>
+        {showOtherInput && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="mt-3 space-y-3"
+          >
+            <textarea
+              value={otherText}
+              onChange={(e) => setOtherText(e.target.value)}
+              placeholder="Tell us why this one isn't right..."
+              autoFocus
+              rows={2}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-pink focus:outline-none focus:ring-1 focus:ring-sheepdog-pink"
+            />
+            <Button
+              onClick={() => onSelect("Other", otherText.trim() || undefined)}
+              className="w-full"
+            >
+              Submit
+            </Button>
+          </motion.div>
+        )}
+
+        {!showOtherInput && (
+          <button
+            onClick={() => onSelect("Other")}
+            className="mt-3 w-full text-center text-sm text-gray-400 hover:text-gray-600"
+          >
+            Skip — just dismiss it
+          </button>
+        )}
       </motion.div>
     </motion.div>
   );

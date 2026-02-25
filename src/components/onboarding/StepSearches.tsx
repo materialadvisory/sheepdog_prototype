@@ -10,6 +10,8 @@ interface StepSearchesProps {
   onRemove: (index: number) => void;
   onAddZip: (searchIndex: number, zip: string) => void;
   onRemoveZip: (searchIndex: number, zip: string) => void;
+  onAddArea: (searchIndex: number, area: string) => void;
+  onRemoveArea: (searchIndex: number, area: string) => void;
   onTogglePropertyType: (searchIndex: number, type: PropertyTypeOption) => void;
 }
 
@@ -20,6 +22,8 @@ export function StepSearches({
   onRemove,
   onAddZip,
   onRemoveZip,
+  onAddArea,
+  onRemoveArea,
   onTogglePropertyType,
 }: StepSearchesProps) {
   return (
@@ -41,6 +45,8 @@ export function StepSearches({
             onUpdate={(field, value) => onUpdate(index, field, value)}
             onAddZip={(zip) => onAddZip(index, zip)}
             onRemoveZip={(zip) => onRemoveZip(index, zip)}
+            onAddArea={(area) => onAddArea(index, area)}
+            onRemoveArea={(area) => onRemoveArea(index, area)}
             onTogglePropertyType={(type) => onTogglePropertyType(index, type)}
             onRemove={() => onRemove(index)}
           />

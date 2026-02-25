@@ -80,8 +80,8 @@ export function LeadFeed() {
       <AnimatePresence>
         {feed.showDismissSheet && (
           <DismissReasonSheet
-            onSelect={(reason) =>
-              feed.dismissLead(feed.showDismissSheet!, reason)
+            onSelect={(reason, customText) =>
+              feed.dismissLead(feed.showDismissSheet!, reason, customText)
             }
             onClose={() => feed.setShowDismissSheet(null)}
           />
@@ -92,6 +92,8 @@ export function LeadFeed() {
       <AnimatePresence>
         {feed.showConfirmation && (
           <ConfirmationDialog
+            onReachOut={() => feed.setInterestedAction(feed.showConfirmation!, "reach-out")}
+            onSave={() => feed.setInterestedAction(feed.showConfirmation!, "save")}
             onClose={() => feed.setShowConfirmation(null)}
           />
         )}

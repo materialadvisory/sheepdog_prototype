@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/Button";
+import { SearchFormStandalone } from "@/components/shared/SearchFormStandalone";
 import type { Search } from "@/types/lead";
+import type { SearchFormData } from "@/types/onboarding";
 
 interface SearchManagerProps {
   searches: Search[];
@@ -23,8 +24,12 @@ export function SearchManager({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newLabel, setNewLabel] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  const handleAddSearch = (formData: SearchFormData) => {
+    onAdd({ id: formData.id, label: formData.label });
+    setShowAddForm(false);
+  };
 
   return (
     <motion.div
@@ -40,7 +45,7 @@ export function SearchManager({
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-t-2xl bg-white p-5 pb-8 sm:rounded-2xl"
+        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-5 pb-8 sm:rounded-2xl"
       >
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-headline text-lg uppercase tracking-wide">
@@ -66,6 +71,7 @@ export function SearchManager({
           </button>
         </div>
 
+        {/* Existing searches */}
         <div className="space-y-2">
           {searches.map((search) => (
             <div
@@ -124,7 +130,7 @@ export function SearchManager({
                     }}
                     className="text-xs text-gray-400 hover:text-gray-600"
                   >
-                    Edit
+                    Rename
                   </button>
                   {searches.length > 1 && (
                     <button
@@ -140,31 +146,16 @@ export function SearchManager({
           ))}
         </div>
 
-        {/* Add new search */}
+        {/* Add new search — full form */}
         {showAddForm ? (
-          <div className="mt-3 flex gap-2">
-            <input
-              type="text"
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              placeholder="Search name..."
-              autoFocus
-              className="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-sheepdog-lime focus:outline-none focus:ring-1 focus:ring-sheepdog-lime"
+          <div className="mt-4">
+            <h4 className="mb-3 font-headline text-base uppercase tracking-wide">
+              New Search
+            </h4>
+            <SearchFormStandalone
+              onSubmit={handleAddSearch}
+              onCancel={() => setShowAddForm(false)}
             />
-            <Button
-              onClick={() => {
-                if (newLabel.trim()) {
-                  onAdd({
-                    id: `search-${Date.now()}`,
-                    label: newLabel.trim(),
-                  });
-                  setNewLabel("");
-                  setShowAddForm(false);
-                }
-              }}
-            >
-              Add
-            </Button>
           </div>
         ) : (
           <button

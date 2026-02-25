@@ -19,20 +19,20 @@ export interface ProfileData {
   fullName: string;
   companyName: string;
   phone: string;
-  buyerIntent: BuyerIntent | null;
+  buyerIntent: BuyerIntent[];
 }
 
 export interface SearchFormData {
   id: string;
   label: string;
   state: string;
+  areas: string[];
   zipCodes: string[];
   propertyTypes: PropertyTypeOption[];
   priceMin: string;
   priceMax: string;
   bedroomsMin: string;
   bathroomsMin: string;
-  // Advanced filters
   sqftMin: string;
   sqftMax: string;
   yearBuiltMin: string;
@@ -48,12 +48,12 @@ export interface OnboardingData {
 }
 
 export const BUYER_INTENT_OPTIONS: { value: BuyerIntent; label: string }[] = [
-  { value: "flip", label: "Flip properties (buy, renovate, sell)" },
-  { value: "rental", label: "Buy & hold rentals" },
-  { value: "wholesale", label: "Wholesale deals" },
-  { value: "first-home", label: "Buy my first home" },
-  { value: "new-home", label: "Find a new home (relocating/upgrading)" },
-  { value: "syndication", label: "Invest with a group (syndication)" },
+  { value: "flip", label: "Flip" },
+  { value: "rental", label: "Buy & Hold" },
+  { value: "wholesale", label: "Wholesale" },
+  { value: "first-home", label: "First Home" },
+  { value: "new-home", label: "New Home" },
+  { value: "syndication", label: "Syndication" },
   { value: "other", label: "Other" },
 ];
 
@@ -82,6 +82,7 @@ export function createEmptySearch(): SearchFormData {
     id: `search-${Date.now()}`,
     label: "",
     state: "",
+    areas: [],
     zipCodes: [],
     propertyTypes: [],
     priceMin: "",
