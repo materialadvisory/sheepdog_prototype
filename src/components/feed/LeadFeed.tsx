@@ -52,7 +52,6 @@ export function LeadFeed() {
                 transition={{
                   duration: 0.4,
                   delay: index * 0.05,
-                  exit: { duration: 0.3 },
                 }}
               >
                 <LeadCard
