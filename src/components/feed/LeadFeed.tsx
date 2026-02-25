@@ -48,7 +48,7 @@ export function LeadFeed() {
                 layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: -300 }}
+                exit={{ opacity: 0, x: -300, transition: { duration: 0.3 } }}
                 transition={{
                   duration: 0.4,
                   delay: index * 0.05,
